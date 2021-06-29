@@ -11,8 +11,8 @@ from torch.testing._internal.common_utils import \
     (TestCase, run_tests, TEST_NUMPY, TEST_LIBROSA, TEST_MKL)
 from torch.testing._internal.common_device_type import \
     (instantiate_device_type_tests, ops, dtypes, onlyOnCPUAndCUDA,
-     skipCPUIfNoMkl, skipCUDAIfRocm, deviceCountAtLeast, onlyCUDA, OpDTypes,
-     skipIf)
+     skipCPUIfNoMkl, skipCPUIfNoFFT, skipCUDAIfRocm, deviceCountAtLeast,
+     onlyCUDA, OpDTypes, skipIf)
 from torch.testing._internal.common_methods_invocations import spectral_funcs
 
 from setuptools import distutils
@@ -139,7 +139,7 @@ class TestFFT(TestCase):
             self.assertEqual(actual, expected, exact_dtype=exact_dtype)
 
     @skipCUDAIfRocm
-    @skipCPUIfNoMkl
+    @skipCPUIfNoFFT
     @onlyOnCPUAndCUDA
     @dtypes(torch.float, torch.double, torch.complex64, torch.complex128)
     def test_fft_round_trip(self, device, dtype):
@@ -200,7 +200,7 @@ class TestFFT(TestCase):
         with self.assertRaisesRegex(RuntimeError, "ihfft expects a real input tensor"):
             torch.fft.ihfft(t)
 
-    @skipCPUIfNoMkl
+    @skipCPUIfNoFFT
     @onlyOnCPUAndCUDA
     @dtypes(torch.int8, torch.float, torch.double, torch.complex64, torch.complex128)
     def test_fft_type_promotion(self, device, dtype):
@@ -453,7 +453,7 @@ class TestFFT(TestCase):
 
     # Helper functions
 
-    @skipCPUIfNoMkl
+    @skipCPUIfNoFFT
     @onlyOnCPUAndCUDA
     @unittest.skipIf(not TEST_NUMPY, 'NumPy not found')
     @dtypes(torch.float, torch.double)
@@ -479,7 +479,7 @@ class TestFFT(TestCase):
                 actual = torch_fn(*args, device=device, dtype=dtype)
                 self.assertEqual(actual, expected, exact_dtype=False)
 
-    @skipCPUIfNoMkl
+    @skipCPUIfNoFFT
     @onlyOnCPUAndCUDA
     @dtypes(torch.float, torch.double)
     def test_fftfreq_out(self, device, dtype):
@@ -491,7 +491,7 @@ class TestFFT(TestCase):
             self.assertEqual(actual, expect)
 
 
-    @skipCPUIfNoMkl
+    @skipCPUIfNoFFT
     @onlyOnCPUAndCUDA
     @unittest.skipIf(not TEST_NUMPY, 'NumPy not found')
     @dtypes(torch.float, torch.double, torch.complex64, torch.complex128)
@@ -1078,7 +1078,7 @@ class TestFFT(TestCase):
 
     @skipCUDAIfRocm
     @onlyOnCPUAndCUDA
-    @skipCPUIfNoMkl
+    @skipCPUIfNoFFT
     @dtypes(torch.double)
     def test_istft_of_sine(self, device, dtype):
         def _test(amplitude, L, n):
@@ -1113,7 +1113,7 @@ class TestFFT(TestCase):
 
     @skipCUDAIfRocm
     @onlyOnCPUAndCUDA
-    @skipCPUIfNoMkl
+    @skipCPUIfNoFFT
     @dtypes(torch.double)
     def test_istft_linearity(self, device, dtype):
         num_trials = 100
